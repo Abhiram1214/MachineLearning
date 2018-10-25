@@ -30,4 +30,30 @@ y_pred == y_test
 
 #making the confusion matrix
 from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(y_test, y_pred)
+
+
+#visualization the training set results
+from matplotlib.colors import ListedColormap
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
