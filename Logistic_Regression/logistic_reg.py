@@ -1,12 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 
 #import dataset
 
 dataset = pd.read_csv("Social_Network_Ads.csv")
 x = dataset.iloc[:, [2,3]].values
 y = dataset.iloc[:, 4].values
+
+
+sns.set(style="whitegrid")
+sns.relplot(x=dataset.Age, y=dataset.EstimatedSalary, hue='size', data=dataset);
 
 # splitting the training set with a test set
 from sklearn.model_selection import train_test_split
@@ -35,6 +40,7 @@ cm = confusion_matrix(y_test, y_pred)
 
 #visualization the training set results
 from matplotlib.colors import ListedColormap
+
 
 
 
