@@ -2,8 +2,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-%matplotlib qt
-#%reset -f
+
+
 #import dataset
 
 dataset = pd.read_csv("Mall_Customers.csv")
