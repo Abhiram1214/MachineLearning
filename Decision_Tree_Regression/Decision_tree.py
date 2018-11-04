@@ -21,7 +21,7 @@ plt.xlabel("Position level")
 plt.ylabel("salary")
 plt.show()
 
-#visualizing the linear regression set for higher resoultion and smooth curve
+#visualizing the Decission regression set for higher resoultion and smooth curve
 x_grid = np.arange(min(x), max(x), 0.01)
 x_grid = x_grid.reshape((len(x_grid), 1))
 plt.scatter(x, y, color='red')
