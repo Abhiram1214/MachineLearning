@@ -1,4 +1,4 @@
-# Logistic Regression
+# Classification template
 
 # Importing the libraries
 import numpy as np
@@ -20,10 +20,8 @@ sc = StandardScaler()
 X_train = sc.fit_transform(X_train)
 X_test = sc.transform(X_test)
 
-# Fitting Logistic Regression to the Training set
-from sklearn.linear_model import LogisticRegression
-classifier = LogisticRegression(random_state = 0)
-classifier.fit(X_train, y_train)
+# Fitting classifier to the Training set
+# Create your classifier here
 
 # Predicting the Test set results
 y_pred = classifier.predict(X_test)
@@ -43,8 +41,8 @@ plt.xlim(X1.min(), X1.max())
 plt.ylim(X2.min(), X2.max())
 for i, j in enumerate(np.unique(y_set)):
     plt.scatter(X_set[y_set == j, 0], X_set[y_set == j, 1],
-                c = ListedColormap(('blue', 'yellow'))(i), label = j)
-plt.title('Logistic Regression (Training set)')
+                c = ListedColormap(('red', 'green'))(i), label = j)
+plt.title('Classifier (Training set)')
 plt.xlabel('Age')
 plt.ylabel('Estimated Salary')
 plt.legend()
@@ -61,8 +59,8 @@ plt.xlim(X1.min(), X1.max())
 plt.ylim(X2.min(), X2.max())
 for i, j in enumerate(np.unique(y_set)):
     plt.scatter(X_set[y_set == j, 0], X_set[y_set == j, 1],
-                c = ListedColormap(('blue', 'yellow'))(i), label = j)
-plt.title('Logistic Regression (Test set)')
+                c = ListedColormap(('red', 'green'))(i), label = j)
+plt.title('Classifier (Test set)')
 plt.xlabel('Age')
 plt.ylabel('Estimated Salary')
 plt.legend()
