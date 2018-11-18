@@ -48,3 +48,10 @@ lin_reg.predict(6.5)
 
 #predict using Polynomial regression
 lin_reg2.predict(poly_reg.fit_transform(6.5))
+
+#The Bias vs Variance trade-off
+#Bias refers to the error due to the model’s simplistic assumptions in fitting the data. 
+#A high bias means that the model is unable to capture the patterns in the data and this results in under-fitting.
+#Variance refers to the error due to the complex model trying to fit the data. 
+#High variance means the model passes through most of the data points and it results in over-fitting the data.
+#Therefore to achieve a good model that performs well both on the train and unseen data, a trade-off is made.

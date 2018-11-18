@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import missingno as msno
+#import missingno as msno
 import seaborn as sn
 import matplotlib.pyplot as plt
 
@@ -57,6 +57,18 @@ x_opt = x[:, [0,1,2,4,6,8,9,10,11]] #remove 3, 5 and 7
 regreesor_ols = sm.OLS(endog = y, exog = x_opt).fit()
 regreesor_ols.summary()
 
+
+x_train, x_test, y_train, y_test = train_test_split(x_opt, y)
+
+#scaling
+scaler = StandardScaler()
+x_train = scaler.fit_transform(x_train)
+x_test = scaler.transform(x_test)
+
+#Linear Regression
+regressor = LinearRegression()
+regressor.fit(x_train, y_train)
+predictions = regressor.predict(x_test)
 
 
 
