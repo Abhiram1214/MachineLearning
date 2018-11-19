@@ -150,7 +150,7 @@ plt.ylabel("Median value of the owner occupied homes in $100000's")
 
 
 
-
+#-----for RM----
 X = df['RM'].values.reshape(-1,1)
 y = df['MEDV'].values
 
@@ -182,6 +182,27 @@ ransac.estimator_.coef_
 ransac.estimator_.intercept_
 #-31.692591588101912
 
+
+#---------for LSTAT-------
+X = df['LSTAT'].values.reshape(-1,1)
+y = df['MEDV'].values
+
+ransac.fit(X,y)
+inlier_mask = ransac.inlier_mask_
+outlier_mask = np.logical_not(inliers)
+
+line_x = np.arange(0,50,1)
+line_y_ransac = ransac.predict(line_x.reshape(-1,1))
+
+sns.set(style="darkgrid", context="notebook")
+plt.scatter(X[inlier_mask], y[inlier_mask],
+            c='blue', marker='o', label="inliers")
+plt.scatter(X[outlier_mask], y[outlier_mask],
+            c="green", marker='s', label="outliers")
+plt.plot(line_x, line_y_ransac, color="red")
+plt.xlabel("LSTAT")
+plt.ylabel("Median value of the owner occupied homes in $100000's")
+plt.legend()
 
 
 
