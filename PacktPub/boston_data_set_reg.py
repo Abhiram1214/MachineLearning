@@ -308,6 +308,81 @@ r2_score(y_test, y_test_pred)
 
 
 
+#------------ Multiple regression with stat models-------------
+
+
+
+import numpy as np
+import pandas as pd
+#import missingno as msno
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+from sklearn.datasets import load_boston
+
+boston_data = load_boston()
+
+df = pd.DataFrame(boston_data.data, columns = boston_data.feature_names)
+df.head()
+df.shape
+
+X = df
+y = boston_data.target
+
+
+#-----Stat models------------
+
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+
+
+X_constant = sm.add_constant(X)
+#we will add constant to avoid BIAS..if we dont use coefficients estimation will include BIAS and intercept as well.
+pd.DataFrame(X_constant)
+
+model = sm.OLS(y, X_constant)
+lr = model.fit()
+lr.summary()
+
+#-------------
+
+form_lr = smf.ols(formula = 'y ~ CRIM + ZN + INDUS + CHAS + NOX + RM + AGE + DIS + RAD + TAX + PTRATIO + B + LSTAT', data=df)
+mlr = form_lr.fit()
+mlr.summary()
+#R-squared: 0.741
+
+
+
+mod_lr = smf.ols(formula = 'y ~ CRIM + ZN + CHAS + NOX + RM + DIS + RAD + TAX + PTRATIO + B + LSTAT', data=df)
+mod = mod_lr.fit()
+mod.summary()
+
+
+
+
+
+
+#---------------------Feature Extraction-----------
+
+#------Correlation matrix----
+# useful to identify the collinearity between predictors
+
+pd.options.display.float_format = '{:, .4f}'.format
+corr_matrix = df.corr()
+corr_matrix[np.abs(corr_matrix) < 0.6] = 0
+sns.heatmap(corr_matrix, annot=True, cmap='YlGnBu')
+#sns.heatmap(df.corr(), annot=True)
+
+#---Detecting Collinearity with Eigen Vectors-----
+
+eigenvalues, eigenvetors = np.linalg.eig(df.corr())
+pd.Series(eigenvalues).sort_values()
+#Index 8 is very close to zero or small when compared to others.. small values represents presence of collinearity
+
+
+
+
 
 
 
