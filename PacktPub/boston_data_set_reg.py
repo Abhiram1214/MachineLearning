@@ -74,8 +74,9 @@ sns.pairplot(df[col_study])
 
 
 
-
-
+#correlation analaysis and feature selection
+sns.heatmap(df.corr(), annot=True)
+df.corr()
 
 
 
