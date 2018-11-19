@@ -138,6 +138,50 @@ plt.ylabel("Median value of the owner occupied homes in $100000's")
 #between 110k and 150K.. no affect when x increases
 
 
+#----------Robust Regression----------------
+#RANSAC Regressor....linear regression in its current state is prone to outliers.
+#if outliers increase the corelation coefficient decreases
+#check stats_applet- http://digitalfirst.bfwpub.com/stats_applet/stats_applet_5_correg.html
+ 
+#---------RANSAC ALGORITHM-----------
+#RANSAC is an iterative algorithm for the robust estimation of 
+#parameters from a subset of inliers from the complete data set. 
+#https://scikit-learn.org/stable/modules/linear_model.html#ransac-random-sample-consensus
+
+
+
+
+X = df['RM'].values.reshape(-1,1)
+y = df['MEDV'].values
+
+from sklearn.linear_model import RANSACRegressor
+ransac = RANSACRegressor()
+
+ransac.fit(X,y)
+
+
+inlier_mask = ransac.inlier_mask_
+outlier_mask = np.logical_not(inlier_mask)
+
+line_x = np.arange(3,10,1)
+line_y_ransac = ransac.predict(line_x.reshape(-1,1))
+
+sns.set(style="darkgrid", context="notebook")
+plt.scatter(X[inlier_mask], y[inlier_mask], 
+            c='blue', marker='o', label='inliers')
+plt.scatter(X[outlier_mask], y[outlier_mask], 
+            c='brown', marker='s', label='outliers')
+plt.plot(line_x, line_y_ransac, color='red')
+plt.xlabel("AVG rooms per dwelling")
+plt.ylabel("Median value of the owner occupied homes in $100000's")
+plt.legend()
+
+ransac.estimator_.coef_
+#array([8.76796372])
+
+ransac.estimator_.intercept_
+#-31.692591588101912
+
 
 
 
