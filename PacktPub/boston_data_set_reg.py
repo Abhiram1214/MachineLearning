@@ -380,10 +380,12 @@ eigenvalues, eigenvetors = np.linalg.eig(df.corr())
 pd.Series(eigenvalues).sort_values()
 #Index 8 is very close to zero or small when compared to others.. small values represents presence of collinearity
 
+np.abs(pd.Series(eigenvetors[:,8])).sort_values(ascending=False)
+#note that 9,8,2 are very high loading when compared to the rest
+#they cause multicolinearity problems
 
-
-
-
+print(df.columns[2], df.columns[8], df.columns[9])
+#INDUS RAD TAX  -- these are causing multi colinearity problem
 
 
 
