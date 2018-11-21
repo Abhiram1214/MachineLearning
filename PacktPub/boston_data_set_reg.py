@@ -360,8 +360,10 @@ mod.summary()
 
 
 
-
-
+#----------------Identifying key features is by \
+#1) Standardizing vaiables
+#2) R^2
+#3) Eigen vales and Eigen Vectors
 
 #---------------------Feature Extraction-----------
 
@@ -386,6 +388,99 @@ np.abs(pd.Series(eigenvetors[:,8])).sort_values(ascending=False)
 
 print(df.columns[2], df.columns[8], df.columns[9])
 #INDUS RAD TAX  -- these are causing multi colinearity problem
+
+
+
+#Standardization
+
+#now we need to check two things
+#1)direction of the coefficient
+#2) impact of the variable/factor on the model
+
+#to perform point two, we need to standardze the model..because 
+plt.hist(df['TAX'])
+#its rather large..
+plt.hist(df['NOX'])
+#tax is gonna drown up NOX...so we standardize the variable
+
+from sklearn.linear_model import LinearRegression
+
+model = LinearRegression()
+model.fit(X,y)
+
+result = pd.DataFrame(list(zip(model.coef_, df.columns)), columns=['coefficient','name']).set_index('name')
+np.abs(result).sort_values(by='coefficient', ascending=False)
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+
+scaler = StandardScaler()
+Stand_coef_reg_model = make_pipeline(scaler, model)
+
+#now recheck the coefficients
+
+Stand_coef_reg_model.fit(X,y)
+result = pd.DataFrame(list(zip(Stand_coef_reg_model.steps[1][1].coef_, df.columns)), columns=['coefficient','name']).set_index('name')
+np.abs(result).sort_values(by='coefficient', ascending=False)
+#LSTAT is more significat and AGE is least significant
+# all the variables are standarized b/w -3 to +3 and we can explain the variablitiy better
+#thank the rest
+
+#Using R^2 to identify keyfeatures
+#compare R^2 of model against R^2 of model without features
+#Significant change in R^2 signifies the importance of the feature
+
+from sklearn.metrics import r2_score
+
+linear_reg = smf.ols(formula = 'y ~ CRIM + ZN + INDUS + CHAS + NOX + RM + AGE + DIS + RAD + TAX + PTRATIO + B + LSTAT', data=df)
+bechmark = linear_reg.fit()
+r2_score(y, bechmark.predict(df))
+#0.7406077428649427
+
+#without LSTAT
+linear_reg = smf.ols(formula = 'y ~ CRIM + ZN + INDUS + CHAS + NOX + RM + AGE + DIS + RAD + TAX + PTRATIO + B', data=df)
+lr_without_lstat = linear_reg.fit()
+r2_score(y, lr_without_lstat.predict(df))
+#0.6839521119105445 ----- drop in R^2
+
+
+#withou AGE
+linear_reg = smf.ols(formula = 'y ~ CRIM + ZN + INDUS + CHAS + NOX + RM + DIS + RAD + TAX + PTRATIO + B + LSTAT', data=df)
+lr_without_AGE = linear_reg.fit()
+r2_score(y, lr_without_AGE.predict(df))
+#0.7406060387904339
+
+
+#without DIS
+linear_reg = smf.ols(formula = 'y ~ CRIM + ZN + INDUS + CHAS + NOX + RM + AGE + RAD + TAX + PTRATIO + B + LSTAT', data=df)
+lr_without_DIS = linear_reg.fit()
+r2_score(y, lr_without_DIS.predict(df))
+#0.7117535455461315
+
+#without RM
+linear_reg = smf.ols(formula = 'y ~ CRIM + ZN + INDUS + CHAS + NOX + AGE + DIS + RAD + TAX + PTRATIO + B + LSTAT', data=df)
+lr_without_RM = linear_reg.fit()
+r2_score(y, lr_without_RM.predict(df))
+#0.6969264517537718
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
