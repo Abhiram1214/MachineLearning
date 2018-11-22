@@ -627,6 +627,7 @@ plt.plot(rng, model_pred)
 print("Coefficients Estimate: ", o_lr.coef_)
 #Coefficients Estimate:  [0.92796845]....
 #should be close to 0.5 as in y_gen = 0.5 * rng
+R2 score train 0.9489583759222997, test 0.8227166518394631 
 
 
 
@@ -907,9 +908,32 @@ print("R2 score train {}, test {} ".format(r2_score(y_train, y_train_pred),r2_sc
 #R2 score train 0.9489583759222997, test 0.8227166518394631 
 
 
+#---------------Revisitng Feature Importance-------
 
+#According to AdaBoost
 
+ada.feature_importances_
+df.columns
 
+result = pd.DataFrame(ada.feature_importances_, df.columns)
+result.columns = ['feature']
+
+result.sort_values(by='feature' ,ascending=False)
+
+result.sort_values(by='feature' ,ascending=False).plot(kind='bar')
+
+#according to RandomForest
+
+forest.feature_importances_
+df.columns
+
+result = pd.DataFrame(forest.feature_importances_, df.columns)
+result.columns = ['feature']
+
+result.sort_values(by='feature' ,ascending=False)
+
+result.sort_values(by='feature' ,ascending=False).plot(kind='bar')
+#LSTAT, RM and DIS seems to be constanst for both models
 
 
 
