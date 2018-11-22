@@ -363,12 +363,13 @@ mod.summary()
 #----------------Identifying key features is by \
 #1) Standardizing vaiables
 #2) R^2
-#3) Eigen vales and Eigen Vectors
 
 #---------------------Feature Extraction-----------
 
 #------Correlation matrix----
 # useful to identify the collinearity between predictors
+# colinearity is usually present in the model itself.. so, not to worry much about it..but good to know
+
 
 pd.options.display.float_format = '{:, .4f}'.format
 corr_matrix = df.corr()
@@ -390,8 +391,10 @@ print(df.columns[2], df.columns[8], df.columns[9])
 #INDUS RAD TAX  -- these are causing multi colinearity problem
 
 
+#-------------Feature Importance-------------
 
-#Standardization
+#Standardization  --  easy one
+#R^2
 
 #now we need to check two things
 #1)direction of the coefficient
@@ -464,30 +467,120 @@ r2_score(y, lr_without_RM.predict(df))
 #0.6969264517537718
 
 
+#------OLS using Gradient Descent----------------
+
+# instead of using linear algebra to calculate estimates..ML model uses Gradient Descent
+
+
+# our goal is to minimize the cost(j(theta))
+
+#For cost function j(theta) = (theta)^2
+
+import numpy as np
+import pandas as pd
+#import missingno as msno
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 
 
 
+theta = 3
+alpha = 0.1
+dat = []
+
+for oo in range(0,10):
+    res = alpha * 2 * theta #upta rule
+    print("{0:.4f} {1:4f}".format(theta, res))
+    dat.append([theta, theta**2]) # cost function
+    theta = theta - res   #update theta
+
+
+tmp = pd.DataFrame(dat)
+tmp
+
+
+plt.plot(np.linspace(-2, 4, 100), np.linspace(-2,4, 100)**2) #Theta^2
+plt.scatter(tmp.iloc[:,0], tmp.iloc[:,1], marker = 'X')
+plt.xlabel("theta")
+plt.ylabel("J(Theta)")
+
+
+#for cost function j(theta) = (theta)^4 + (theta)^2
+
+theta = 3
+alpha = 0.01
+dat = []
+
+for oo in range(0,10):
+    res = alpha * (4 * theta ** 3 + 2 * theta)    #upta rule
+    print("{0:.4f} {1:.4f}".format(theta, res))
+    dat.append([theta, theta ** 4 + theta ** 2]) # cost function
+    theta = theta - res   #update theta
+
+
+tmp = pd.DataFrame(dat)
+tmp
+
+x_grid = np.linspace(-2, 4, 100)
+plt.plot(x_grid, x_grid ** 4 + x_grid **2) #Theta^2
+plt.scatter(tmp.iloc[:,0], tmp.iloc[:,1], marker = 'X')
+plt.xlabel("theta")
+plt.ylabel("J(Theta)")
 
 
 
+#applying gradient descent to Boston Housing Data-----------------
 
 
 
+import numpy as np
+import pandas as pd
+#import missingno as msno
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 
+from sklearn.datasets import load_boston
+
+boston_data = load_boston()
+
+df = pd.DataFrame(boston_data.data, columns = boston_data.feature_names)
+df.head()
+df.shape
+
+X = df[['LSTAT']].values
+y = boston_data.target
 
 
+from sklearn.preprocessing import StandardScaler
+sc_x = StandardScaler()
+sc_y = StandardScaler()
+
+X_std = sc_x.fit_transform(X)
+y_std = sc_y.fit_transform(y.reshape(-1,1)).flatten()
 
 
+alpha = 0.0001
+w_ = np.zeros(1 + X_std.shape[1])
+cost_ = []
+n_ = 100
+
+for i in range(n_):
+    y_pred = np.dot(X_std, w_[1:]) + w_[0]
+    errors = (y_std - y_pred)
+    
+    w_[1:] += alpha * X_std.T.dot(errors)
+    w_[0] += alpha * errors.sum()
+    
+    cost = (errors**2).sum() / 2.0
+    cost_.append(cost)
+    
 
 
-
-
-
-
-
-
+plt.plot(range(1, n_+1), cost_)
+plt.xlabel("SSE")
+plt.ylabel("Epoch")
 
 
 
