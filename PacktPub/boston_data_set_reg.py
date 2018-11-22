@@ -678,6 +678,252 @@ print("Coefficients Estimate: ", en_mod.coef_)
 
 
 
+#------------Polynomial Regression--------------
+import numpy as np
+import pandas as pd
+#import missingno as msno
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+np.random.seed(42)
+n_samples = 100
+
+X = np.linspace(0,10, 100)
+rng = np.random.randn(n_samples)*100
+
+y = X**3 + rng + 100
+
+plt.scatter(X, y)
+
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
+
+#Linear Regression
+lr = LinearRegression()
+lr.fit(X.reshape(-1,1), y)
+model_pred = lr.predict(X.reshape(-1,1))
+
+plt.scatter(X, y)
+plt.plot(X, model_pred)
+print(r2_score(y, model_pred))
+#0.7643394574930141
+
+
+#Polynomial
+from sklearn.preprocessing import PolynomialFeatures
+
+poly_reg = PolynomialFeatures()
+X_poly = poly_reg.fit_transform(X.reshape(-1,1))
+
+lin_reg_2 = LinearRegression()
+lin_reg_2.fit(X_poly, y.reshape(-1,1))
+y_pred = lin_reg_2.predict(X_poly)
+
+plt.scatter(X, y)
+plt.plot(X, y_pred)
+print(r2_score(y, y_pred))
+# 0.9173858308909386
+
+
+
+
+#-------BOSTON DATA USING POLYNOMIAL
+
+
+import numpy as np
+import pandas as pd
+#import missingno as msno
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.metrics import r2_score
+
+
+from sklearn.datasets import load_boston
+
+boston_data = load_boston()
+
+df_boston = pd.DataFrame(boston_data.data, columns = boston_data.feature_names)
+df_boston['MEDV'] = boston_data.target
+
+sns.pairplot(df_boston, size=1.5)
+
+corr_mat = df_boston.corr()
+    corr_mat[np.abs(corr_mat) < 0.6] = 0
+
+sns.heatmap(corr_mat, annot=True, cmap='YlGnBu')
+
+X_boston = df_boston['DIS'].values
+y_boston = df_boston['NOX'].values
+
+plt.scatter(X_boston, y_boston)
+
+
+
+#Linear Regression
+from sklearn.linear_model import LinearRegression
+lr = LinearRegression()
+lr.fit(X_boston.reshape(-1,1), y)
+model_pred = lr.predict(X_boston.reshape(-1,1))
+
+plt.scatter(X, y)
+plt.plot(X, model)
+print(r2_score(y, model_pred))
+#0.5917149670934201
+
+#Quadratic
+from sklearn.preprocessing import PolynomialFeatures
+poly_reg = PolynomialFeatures()
+X_poly_b = poly_reg.fit_transform(X_boston.reshape(-1,1))
+
+lin_reg_2 = LinearRegression()
+lin_reg_2.fit(X_poly_b, y.reshape(-1,1))
+
+X_fit = np.arange(X_boston.min(), X_boston.max(), 1)[:np.newaxis]
+y_pred = lin_reg_2.predict(poly_reg.fit_transform(X_fit.reshape(-1,1)))
+
+plt.scatter(X_boston, y_boston)
+plt.plot(X_fit, y_pred)
+print(r2_score(y_boston, lin_reg_2.predict(X_poly_b)))
+#0.6998562064647851
+
+
+
+
+#Cubic
+from sklearn.preprocessing import PolynomialFeatures
+poly_reg = PolynomialFeatures(degree = 3)
+X_poly_b = poly_reg.fit_transform(X_boston.reshape(-1,1))
+
+lin_reg_2 = LinearRegression()
+lin_reg_2.fit(X_poly_b, y.reshape(-1,1))
+
+X_fit = np.arange(X_boston.min(), X_boston.max(), 1)[:np.newaxis]
+y_pred = lin_reg_2.predict(poly_reg.fit_transform(X_fit.reshape(-1,1)))
+
+plt.scatter(X_boston, y_boston)
+plt.plot(X_fit, y_pred)
+print(r2_score(y_boston, lin_reg_2.predict(X_poly_b)))
+#0.7147737433422647
+# overfitting
+
+
+
+#----------Non Linear Regression-----------------
+# uning Ensamble methods - basic   
+
+
+import numpy as np
+import pandas as pd
+#import missingno as msno
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.metrics import r2_score
+
+
+from sklearn.datasets import load_boston
+
+boston_data = load_boston()
+
+df = pd.DataFrame(boston_data.data, columns = boston_data.feature_names)
+
+y = boston_data.target
+
+
+#------------------brief introduction to Decission Tree-------------
+from sklearn.tree import DecisionTreeRegressor
+
+X = df[['LSTAT']].values
+
+tree = DecisionTreeRegressor(max_depth=5)
+tree.fit(X,y)
+
+sort_idx = X.flatten().argsort()
+
+plt.scatter(X[sort_idx], y[sort_idx])
+plt.plot(X[sort_idx], tree.predict(X[sort_idx]), color='k')
+
+plt.xlabel('LSTAT')
+plt.ylabel('MEDV')
+
+# we overfitted with max_depth = 5.. the problem with Decission tress is we 
+#dont know ho many tree we should select.
+
+#so with 3
+X = df[['LSTAT']].values
+
+tree = DecisionTreeRegressor(max_depth=3)
+tree.fit(X,y)
+
+sort_idx = X.flatten().argsort()
+
+plt.scatter(X[sort_idx], y[sort_idx])
+plt.plot(X[sort_idx], tree.predict(X[sort_idx]), color='k')
+
+plt.xlabel('LSTAT')
+plt.ylabel('MEDV')
+
+
+
+#better option is an ensamble method -- Random Forest
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score, mean_squared_error
+
+X = df.values
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+from sklearn.ensemble import RandomForestRegressor
+
+forest = RandomForestRegressor(n_estimators=500, criterion='mse',
+                               random_state=42, n_jobs=-1)
+forest.fit(X_train, y_train)
+
+y_train_pred = forest.predict(X_train)
+y_test_pred = forest.predict(X_test)
+
+print("MSE train {}, test {} ".format(mean_squared_error(y_train, y_train_pred),mean_squared_error(y_test, y_test_pred)))
+# MSE train 1.871185330169482, test 9.399395631842102
+
+print("R2 score train {}, test {} ".format(r2_score(y_train, y_train_pred),r2_score(y_test, y_test_pred)))
+#R2 score train 0.9787114992747478, test 0.8738557892379996 
+
+
+#------Brief Intro to ADABoost------------
+
+from sklearn.ensemble import AdaBoostRegressor
+
+ada = AdaBoostRegressor(DecisionTreeRegressor(max_depth=4),
+                        n_estimators=500, random_state=42)
+
+ada.fit(X_train, y_train)
+
+y_train_pred = ada.predict(X_train)
+y_test_pred = ada.predict(X_test)
+
+print("MSE train {}, test {} ".format(mean_squared_error(y_train, y_train_pred),mean_squared_error(y_test, y_test_pred)))
+#MSE train 4.486381612065653, test 13.209931064077535 
+
+print("R2 score train {}, test {} ".format(r2_score(y_train, y_train_pred),r2_score(y_test, y_test_pred)))
+#R2 score train 0.9489583759222997, test 0.8227166518394631 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -5,4 +5,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 dd = pd.read_csv("nyc-rolling-sales.csv")
-frame =
+
+dd.head()
+
+
