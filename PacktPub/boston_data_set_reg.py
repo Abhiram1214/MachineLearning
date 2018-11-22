@@ -587,21 +587,93 @@ plt.ylabel("Epoch")
 
 
 
+#-----------------------Regularized Regrassion-------------
+
+#Linear Regression
+
+import numpy as np
+import pandas as pd
+#import missingno as msno
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+from sklearn.linear_model import LinearRegression
+
+np.random.seed(42)
+n_samples = 100
+rng = np.random.randn(n_samples) * 10
+y_gen = 0.5 * rng + 2 * np.random.randn(n_samples)
+
+lr = LinearRegression()
+lr.fit(rng.reshape(-1,1), y_gen)
+model_pred = lr.predict(rng.reshape(-1,1))
+
+plt.scatter(rng, y_gen)
+plt.plot(rng, model_pred)
+print("Coefficients Estimate: ", lr.coef_)
+#Coefficients Estimate:  [0.47134857]
+
+#now with an outlier
+idx = rng.argmax()
+y_gen[idx] = 200
+#just adding 200 at 31 index
+
+o_lr = LinearRegression()
+o_lr.fit(rng.reshape(-1,1), y_gen)
+model_pred = o_lr.predict(rng.reshape(-1,1))
+
+plt.scatter(rng, y_gen)
+plt.plot(rng, model_pred)
+print("Coefficients Estimate: ", o_lr.coef_)
+#Coefficients Estimate:  [0.92796845]....
+#should be close to 0.5 as in y_gen = 0.5 * rng
 
 
 
 
+#Ridge Regression with outlier
+from sklearn.linear_model import Ridge
+ridge_mod = Ridge(alpha=1, normalize=True)
+ridge_mod.fit(rng.reshape(-1,1), y_gen)
+ridge_model_pred = ridge_mod.predict(rng.reshape(-1,1))
+
+plt.scatter(rng, y_gen)
+plt.plot(rng, ridge_model_pred)
+print("Coefficients Estimate: ", ridge_mod.coef_)
+#Coefficients Estimate:  [0.46398423]
+#It ignored the outlier(it might have given it some weight)
 
 
 
 
+#Lasso Regression
+from sklearn.linear_model import Lasso
+lasso_mod = Lasso(alpha=0.4, normalize=True)
+lasso_mod.fit(rng.reshape(-1,1), y_gen)
+lasso_mod_pred = lasso_mod.predict(rng.reshape(-1,1))
+
+plt.scatter(rng, y_gen)
+plt.plot(rng, lasso_mod_pred)
+print("Coefficients Estimate: ", lasso_mod.coef_)
+#Coefficients Estimate:  [0.48530263]
 
 
 
+#Elastic Net
+from sklearn.linear_model import ElasticNet
+en_mod = ElasticNet(alpha=0.02, normalize=True)
+en_mod.fit(rng.reshape(-1,1), y_gen)
+en_mod_pred = en_mod.predict(rng.reshape(-1,1))
+
+plt.scatter(rng, y_gen)
+plt.plot(rng, en_mod_pred)
+print("Coefficients Estimate: ", en_mod.coef_)
+#Coefficients Estimate:  [0.4584509]
 
 
-
-
+#Ridge doent zero out coefficents...it includes all in the model or none
+#Lasso does both parameter shrinkage and variable selection automatically
+#if some covariates are very high, prefer ElasticNet instead of LASSO
 
 
 
