@@ -64,6 +64,49 @@ X_test = np.array([[-3., -1., 4.]])
 X_test_mimax = min_max_scaler.transform(X_test)
 
 
+#-----------------categorical values------------
+source = ['australia', 'singapore', 'new zeland', 'hong kong']
+
+label_enc = preprocessing.LabelEncoder()
+src = label_enc.fit_transform(source)
+
+print("country code mapping:")
+for k,v in enumerate(label_enc.classes_):
+    print(v, '\t', k)
+
+test_data = ['hong kong', 'singapore', 'new zeland', 'australia']
+result = encoder.transfor(test_data)
+
+print(result)
+
+#here the machine thinks that new zeland is more important than australia due to the mapping
+
+#------one hot encoding----------
+from sklearn.preprocessing import OneHotEncoder
+
+one_hot_enc = OneHotEncoder(sparse=False)
+src = src.reshape(len(src), 1)
+one_hot = one_hot_enc.fit_transform(src)
+print(one_hot)
+
+
+invert_res = label_enc.inverse_transform([np.argmax(one_hot[0,:])])
+print(invert_res)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
