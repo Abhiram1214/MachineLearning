@@ -627,7 +627,7 @@ plt.plot(rng, model_pred)
 print("Coefficients Estimate: ", o_lr.coef_)
 #Coefficients Estimate:  [0.92796845]....
 #should be close to 0.5 as in y_gen = 0.5 * rng
-R2 score train 0.9489583759222997, test 0.8227166518394631 
+#R2 score train 0.9489583759222997, test 0.8227166518394631 
 
 
 
