@@ -39,8 +39,8 @@ sns.countplot(x='bedrooms', data=data, order=data['bedrooms'].value_counts().ind
 
 
 
-X = df[['bathrooms','sqft_living','grade', 'sqft_above']].values
-y = df['price'].values
+X = df[['bedrooms', 'bathrooms', 'sqft_living', 'sqft_lot', 'floors', 'waterfront', 'view', 'condition', 'grade', 'sqft_above', 'sqft_basement', 'yr_built', 'yr_renovated', 'zipcode', 'lat', 'long', 'sqft_living15', 'sqft_lot15']].values
+y = df[['price']].values
 
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
@@ -48,7 +48,7 @@ from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state = 3)
 
 reg = LinearRegression()
-reg.fit(X, y)
+reg.fit(X_train, y_train)
 
 y_train_pred = reg.predict(X_train)
 y_test_pred = reg.predict(X_test)
@@ -56,9 +56,9 @@ y_test_pred = reg.predict(X_test)
 
 #for training:
 print('Mean Squared Error:', metrics.mean_squared_error(y_train, y_train_pred))  
-#Mean Squared Error: 57865260331.49756
+#Mean Squared Error: 41233028230.31368
 print("R2 score is ", metrics.r2_score(y_train, y_train_pred))
-# R2 score is  0.5422114498196673
+# R2 score is  0.6976611824867128
 
 print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_train, y_train_pred)))
 #Root Mean Squared Error: 249866.55193128675
@@ -82,6 +82,54 @@ plt.hlines(y=0, xmin=-500000, xmax=2500000, lw=2, color='k')
 # R2 score is  0.5422114498196673
 
 
+#1.1.2. Ridge Regression¶
+
+from sklearn import linear_model
+reg = linear_model.Ridge(alpha=.5)
+reg.fit(X_train, y_train)
+
+y_train_pred = reg.predict(X_train)
+y_test_pred = reg.predict(X_test)
+
+
+
+print('Mean Squared Error:', metrics.mean_squared_error(y_train, y_train_pred))  
+#Mean Squared Error: 41233028230.31368
+print("R2 score is ", metrics.r2_score(y_train, y_train_pred))
+#R2 score is  0.6977545822620015
+
+
+
+
+
+#OLS nodel
+import statsmodels.api as sm
+
+X = df[['bedrooms', 'bathrooms', 'sqft_living', 'sqft_lot', 'floors', 'waterfront', 'view', 'condition', 'grade', 'sqft_above', 'sqft_basement', 'yr_built', 'yr_renovated', 'zipcode', 'lat', 'long', 'sqft_living15', 'sqft_lot15']]
+sm.add_constant(X)
+y = df[['price']]
+
+
+model = sm.OLS(y, X.astype(float)).fit()
+predictions = model.predict(X)
+
+model.summary()
+
+
+
+
+
+X = df[['bedrooms', 'bathrooms', 'sqft_living', 'sqft_above', 'sqft_basement', 'yr_built', 'yr_renovated', 'zipcode', 'lat', 'long', 'sqft_living15', 'sqft_lot15']]
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -90,9 +138,34 @@ plt.hlines(y=0, xmin=-500000, xmax=2500000, lw=2, color='k')
 
 #----checking with polynomial
 
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn import linear_model
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn import metrics
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+data = pd.read_csv("kc_house_data.csv")
+data.describe()
+
+df = pd.DataFrame(data)
+
+
+
+
+X = df[['bedrooms', 'bathrooms', 'sqft_living', 'sqft_lot', 'floors', 'waterfront', 'view', 'condition', 'grade', 'sqft_above', 'sqft_basement', 'yr_built', 'yr_renovated', 'zipcode', 'lat', 'long', 'sqft_living15', 'sqft_lot15']].values
+y = df[['price']].values
+
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state = 3)
+
 from sklearn.preprocessing import PolynomialFeatures
 
-poly_reg = PolynomialFeatures()
+poly_reg = PolynomialFeatures(degree=3)
 X_train_poly = poly_reg.fit_transform(X_train)
 X_test_poly = poly_reg.fit_transform(X_test)
 
@@ -106,15 +179,28 @@ y_test_poly_pred = lin_reg_2.predict(X_test_poly)
 
 
 print("R2 score is ", metrics.r2_score(y_train, y_train_poly_pred))
-#   R2 score is  0.6141761191926798
-
+#R2 score is  0.8299085147038741
+#degree 3 = R2 score is  0.8741228046237022
 print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_train, y_train_poly_pred)))
-#Root Mean Squared Error: 229387.74555858175
+#Root Mean Squared Error: 152305.97718866024
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 X_fit = np.arange(X.min(), X.max(), 1)[:np.newaxis]
 
-plt.scatter(X_train, y_train, c='blue', marker='o', label = "training data")
-plt.plot(X, lin_reg_2.predict(poly_reg.fit_transform(X)), color='red')
+plt.scatter(y_train_poly_pred, y_train_poly_pred - y_train, c='blue', marker='o', label = "training data")
+plt.plot(X_fit, lin_reg_2.predict(poly_reg.fit_transform(X)), color='red')
 
 plt.scatter(y_test_poly_pred, y_test_poly_pred - y_test, c='red', marker='s', label = "test data")
 plt.plot(X_fit, y_train_poly_pred)
@@ -122,6 +208,32 @@ plt.xlabel("Predicted values")
 plt.ylabel("Errors")
 plt.legend()
 plt.hlines(y=0, xmin=-500000, xmax=2500000, lw=2, color='k')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #-------------Feature Scaling using Standard Scaler
