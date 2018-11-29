@@ -56,19 +56,62 @@ clf.predict(X[1000].reshape(1, -1))
 
 
 
+#we dont know how well our model czn predict...so, we use cross vlidation
+#measuring accuracy
+#Skfold..with split, we get 30 percent from non zero and 70 from zero
+
+from sklearn.model_selection import StratifiedKFold
+from sklearn.base import clone
+clf = SGDClassifier(random_state=0)
+
+
+skfolds = StratifiedKFold(n_splits=3, random_state=100)
+
+for train_index, test_index in skfolds.split(X_train, y_train_0):
+    clone_clf = clone(clf)
+    X_train_fold = X_train[train_index]
+    y_train_folds = (y_train_0[train_index])
+    X_test_fold = X_train[test_index]
+    y_test_fold = (y_train_0[test_index])
+    
+    clone_clf.fit(X_train_fold, y_train_folds)
+    y_pred = clone_clf.predict(X_test_fold)
+    n_correct = sum(y_pred == y_test_fold)
+    print("{0:.4f}".format(n_correct / len(y_pred)))
+
+
+#whats hapeening here is we discted the data int 3 eual protions
+#ex: A,B will be training and C will test
+#net A,C training abd B test
+#next, B,C training and A test
+
+#0.9739
+#0.9732
+#0.9881
+
+#another way of doing cross validation
+from sklearn.model_selection import cross_val_score
+cross_val_score(clf, X_train, y_train_0, cv=3, scoring='accuracy')
+#array([0.9739013 , 0.97325   , 0.98814941])  -- same as above
 
 
 
+## Danger of Blindly Applying Evaluator As a Performance Measure
 
+from sklearn.model_selection import cross_val_predict
 
+y_train_pred = cross_val_predict(clf, X_train, y_train_0, cv=3)
 
+from sklearn.metrics import confusion_matrix
+confusion_matrix(y_train_0, y_train_pred)
 
+from sklearn.metrics import precision_score, recall_score
+precision_score(y_train_0, y_train_pred) # 5618 / (574 + 5618)
 
+recall_score(y_train_0, y_train_pred) # 5618 / (305 + 5618)
 
-
-
-
-
+from sklearn.metrics import f1_score
+f1_score(y_train_0, y_train_pred)
 
 
 

@@ -421,7 +421,7 @@ scaler = StandardScaler()
 Stand_coef_reg_model = make_pipeline(scaler, model)
 
 #now recheck the coefficients
-
+  
 Stand_coef_reg_model.fit(X,y)
 result = pd.DataFrame(list(zip(Stand_coef_reg_model.steps[1][1].coef_, df.columns)), columns=['coefficient','name']).set_index('name')
 np.abs(result).sort_values(by='coefficient', ascending=False)

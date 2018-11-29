@@ -165,7 +165,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 from sklearn.preprocessing import PolynomialFeatures
 
-poly_reg = PolynomialFeatures(degree=3)
+poly_reg = PolynomialFeatures(degree=4)
 X_train_poly = poly_reg.fit_transform(X_train)
 X_test_poly = poly_reg.fit_transform(X_test)
 
